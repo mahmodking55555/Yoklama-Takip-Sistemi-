@@ -12,7 +12,6 @@
             color: #fff;
             font-family: 'Poppins', sans-serif;
         }
-
         .profile-box {
             position: fixed;
             top: 20px;
@@ -24,7 +23,6 @@
             text-align: center;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
-
         .profile-box img {
             width: 80px;
             height: 80px;
@@ -32,16 +30,10 @@
             border: 3px solid #fff;
             margin-bottom: 10px;
         }
-
         .profile-box h5 {
             margin: 10px 0 5px;
             font-size: 18px;
         }
-
-        .profile-box a {
-            color: #fff;
-        }
-
         .container {
             max-width: 600px;
             margin-top: 150px;
@@ -50,25 +42,20 @@
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
-
         h2 {
             text-align: center;
             margin-bottom: 20px;
         }
-
         .btn-info {
             background-color: #1abc9c;
             border: none;
         }
-
         .btn-info:hover {
             background-color: #16a085;
         }
-
         .lecture-list {
             margin-top: 30px;
         }
-
         .lecture-item {
             margin-bottom: 20px;
             background: rgba(255, 255, 255, 0.1);
@@ -76,11 +63,9 @@
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
-
         .lecture-item h5 {
             margin-bottom: 10px;
         }
-
         .students-list {
             margin-top: 10px;
             font-size: 14px;
@@ -97,7 +82,6 @@
         <a href="index.html" class="btn btn-secondary btn-sm w-100 mb-2">Geri Dön</a>
         <button onclick="logout()" class="btn btn-danger btn-sm w-100">Çıkış Yap</button>
     </div>
-
     <div class="container">
         <h2>Ders Oluştur</h2>
         <form id="lectureForm">
@@ -111,49 +95,34 @@
             </div>
             <button type="button" id="createLectureBtn" class="btn btn-info w-100">Ders Oluştur</button>
         </form>
-
         <div class="lecture-list">
             <h3>Oluşturduğun Dersler</h3>
             <div id="lectureList"></div>
         </div>
     </div>
-
     <script>
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
         document.getElementById("teacherName").innerText = currentUser ? currentUser.fullName : "Misafir";
-
-        // Function to create a new lecture
         document.getElementById("createLectureBtn").addEventListener("click", function () {
             const subject = document.getElementById("subjectInput").value.trim();
             const date = document.getElementById("dateInput").value.trim();
             const lectureCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-            const lectureKey = "lecture_" + lectureCode;
-
+            const lectureKey = `${currentUser.username}_lecture_${lectureCode}`;
             if (subject && date) {
-                let lectureData = {
-                    subject: subject,
-                    date: date,
-                    code: lectureCode,
-                    students: []
-                };
+                let lectureData = { subject, date, code: lectureCode, students: [] };
                 localStorage.setItem(lectureKey, JSON.stringify(lectureData));
                 displayLectures();
             }
         });
-
-        // Display all created lectures
         function displayLectures() {
             const lectureListContainer = document.getElementById("lectureList");
             lectureListContainer.innerHTML = "";
-            const lectureKeys = Object.keys(localStorage).filter(key => key.startsWith("lecture_"));
-
+            const lectureKeys = Object.keys(localStorage).filter(key => key.startsWith(`${currentUser.username}_lecture_`));
             lectureKeys.forEach(key => {
                 const lectureData = JSON.parse(localStorage.getItem(key));
                 const lectureItem = document.createElement("div");
                 lectureItem.classList.add("lecture-item");
-
                 const studentsList = lectureData.students.map(student => `<p>${student}</p>`).join("");
-
                 lectureItem.innerHTML = `
                     <h5>${lectureData.subject} - ${lectureData.date}</h5>
                     <p><strong>Ders Kodu:</strong> ${lectureData.code}</p>
@@ -163,23 +132,17 @@
                     </div>
                     <button class="btn btn-danger btn-sm mt-2" onclick="deleteLecture('${key}')">Ders Sil</button>
                 `;
-
                 lectureListContainer.appendChild(lectureItem);
             });
         }
-
-        // Delete the lecture
         function deleteLecture(lectureKey) {
             localStorage.removeItem(lectureKey);
             displayLectures();
         }
-
         function logout() {
             localStorage.removeItem("currentUser");
             window.location.href = "index.html";
         }
-
-        // Display lectures on page load
         displayLectures();
     </script>
 </body>
